@@ -46,8 +46,12 @@ RUN <<-'EOL'
 	ls -lAog /etc/pacman.d/
 	# rankmirrors test
 	ls -lAog /etc/pacman.d/cachyos-mirrorlist
-	rankmirrors -t -w -v -r cachyos /etc/pacman.d/cachyos-mirrorlist
+	rankmirrors -t -w -r cachyos /etc/pacman.d/cachyos-mirrorlist
 	ls -lAog /etc/pacman.d/cachyos-mirrorlist
+	echo
+	ls -lAog /etc/pacman.d/chaotic-mirrorlist
+	rankmirrors -t -w -r chaotic-aur /etc/pacman.d/chaotic-mirrorlist
+	ls -lAog /etc/pacman.d/chaotic-mirrorlist
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
