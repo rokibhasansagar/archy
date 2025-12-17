@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1-labs
-FROM --platform=$BUILDPLATFORM archlinux:base AS ROOT
+FROM --platform=$BUILDPLATFORM archlinux:base AS rootfs
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -58,7 +58,7 @@ FROM scratch
 
 LABEL org.opencontainers.image.description="Arch + CachyOS + Chaotic-AUR ->> Arch-based distribution with personal optimization."
 
-COPY --from=ROOT / /
+COPY --from=rootfs / /
 
 USER app
 
