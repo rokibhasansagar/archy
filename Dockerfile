@@ -46,7 +46,7 @@ RUN <<-'EOL'
 	ls -lAog /etc/pacman.d/
 	# rankmirrors test
 	ls -lAog /etc/pacman.d/cachyos-mirrorlist
-	rankmirrors -t -w -v /etc/pacman.d/cachyos-mirrorlist
+	rankmirrors -t -w -v -r cachyos /etc/pacman.d/cachyos-mirrorlist
 	ls -lAog /etc/pacman.d/cachyos-mirrorlist
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
