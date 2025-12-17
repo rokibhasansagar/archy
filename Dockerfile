@@ -34,22 +34,23 @@ RUN <<-'EOL'
 	# Install base-devel
 	pacman -S --noconfirm --needed base-devel
 	# Add Chaotic-AUR
-	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-	pacman-key --lsign-key 3056513887B78AEB
+	sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+	sudo pacman-key --lsign-key 3056513887B78AEB
 	export chaoticmirror="https://cdn-mirror.chaotic.cx/chaotic-aur"
-	pacman -U "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
+	sudo pacman -U "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
 	cat >>/etc/pacman.conf <<EOH
 	[chaotic-aur]
 	Include = /etc/pacman.d/chaotic-mirrorlist
 	EOH
 	echo "" >>/etc/pacman.conf
+	ls -lAog /etc/pacman.d/
 	cat /etc/pacman.conf
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
-	pacman -S --noconfirm --needed chaotic-aur/paru chaotic-aur/yay
+	sudo pacman -S --noconfirm --needed chaotic-aur/paru chaotic-aur/yay
 	# Cleanup pacman caches
-	rm -rvf /var/lib/pacman/sync/* /var/cache/pacman/pkg/*.pkg.tar.zst* 2>/dev/null
+	sudo rm -rvf /var/lib/pacman/sync/* /var/cache/pacman/pkg/*.pkg.tar.zst* 2>/dev/null
 	# Add "app" user with "sudo" access
 	useradd -G wheel -m -s /bin/bash app
 	echo -e "\n%wheel ALL=(ALL:ALL) NOPASSWD: ALL\napp   ALL=(ALL:ALL) NOPASSWD: ALL\n" | tee -a /etc/sudoers
