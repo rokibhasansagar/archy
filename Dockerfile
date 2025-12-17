@@ -34,11 +34,13 @@ RUN <<-'EOL'
 	# Install base-devel
 	pacman -S --noconfirm --needed base-devel
 	# Add Chaotic-AUR
-	sudo pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
-	sudo pacman-key --lsign-key 3056513887B78AEB
+	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
+	pacman-key --lsign-key 3056513887B78AEB
 	export chaoticmirror="https://cdn-mirror.chaotic.cx/chaotic-aur"
-	sudo pacman -U "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
-	sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
+	pacman -U "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
+	curl -sLO "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
+	tar -tvf "chaotic-mirrorlist.pkg.tar.zst" /etc/pacman.d/chaotic-mirrorlist
+	rm -vf "chaotic-mirrorlist.pkg.tar.zst"
 	cat >>/etc/pacman.conf <<EOH
 	[chaotic-aur]
 	Include = /etc/pacman.d/chaotic-mirrorlist
