@@ -7,6 +7,7 @@ ARG BUILDPLATFORM
 SHELL ["/bin/bash", "-c"]
 
 RUN <<-'EOL'
+	set -x
 	# Update System Immediately
 	pacman -Syu --noconfirm 2>/dev/null || true
 	# Initialize pacman keyring
@@ -30,6 +31,8 @@ RUN <<-'EOL'
 	echo "" >>/etc/pacman.conf
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
+	# Install base-devel
+	pacman -S --noconfirm --needed base-devel
 	# Add Chaotic-AUR
 	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 	pacman-key --lsign-key 3056513887B78AEB
@@ -40,10 +43,9 @@ RUN <<-'EOL'
 	Include = /etc/pacman.d/chaotic-mirrorlist
 	EOH
 	echo "" >>/etc/pacman.conf
+	cat /etc/pacman.conf
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
-	# Install base-devel
-	pacman -S --noconfirm --needed base-devel
 	# Install yay & paru (pacman helpers)
 	pacman -S --noconfirm --needed chaotic-aur/paru chaotic-aur/yay
 	# Cleanup pacman caches
