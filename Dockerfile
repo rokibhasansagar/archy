@@ -38,13 +38,14 @@ RUN <<-'EOL'
 	sudo pacman-key --lsign-key 3056513887B78AEB
 	export chaoticmirror="https://cdn-mirror.chaotic.cx/chaotic-aur"
 	sudo pacman -U "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
+	sudo pacman -U 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-keyring.pkg.tar.zst' 'https://cdn-mirror.chaotic.cx/chaotic-aur/chaotic-mirrorlist.pkg.tar.zst'
 	cat >>/etc/pacman.conf <<EOH
 	[chaotic-aur]
 	Include = /etc/pacman.d/chaotic-mirrorlist
 	EOH
 	echo "" >>/etc/pacman.conf
 	ls -lAog /etc/pacman.d/
-	cat /etc/pacman.conf
+	cat /etc/pacman.d/chaotic-mirrorlist
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
