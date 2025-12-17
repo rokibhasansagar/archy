@@ -1,5 +1,5 @@
 # syntax=docker/dockerfile:1-labs
-FROM --platform=$BUILDPLATFORM archlinux:base
+FROM --platform=$BUILDPLATFORM archlinux:base AS ROOT
 
 ARG TARGETPLATFORM
 ARG BUILDPLATFORM
@@ -32,7 +32,7 @@ RUN <<-'EOL'
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install base-devel
-	pacman -S --noconfirm --needed base-devel pacman-contrib pacutils
+	pacman -S --noconfirm --needed base-devel # pacman-contrib pacutils
 	# Add Chaotic-AUR
 	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 	pacman-key --lsign-key 3056513887B78AEB
@@ -43,15 +43,6 @@ RUN <<-'EOL'
 	Include = /etc/pacman.d/chaotic-mirrorlist
 	EOH
 	echo "" >>/etc/pacman.conf
-	ls -lAog /etc/pacman.d/
-	# rankmirrors test
-	ls -lAog /etc/pacman.d/cachyos-mirrorlist
-	rankmirrors -t -w -r cachyos /etc/pacman.d/cachyos-mirrorlist
-	ls -lAog /etc/pacman.d/cachyos-mirrorlist
-	echo
-	ls -lAog /etc/pacman.d/chaotic-mirrorlist
-	rankmirrors -t -w -r chaotic-aur /etc/pacman.d/chaotic-mirrorlist
-	ls -lAog /etc/pacman.d/chaotic-mirrorlist
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
@@ -63,7 +54,15 @@ RUN <<-'EOL'
 	echo -e "\n%wheel ALL=(ALL:ALL) NOPASSWD: ALL\napp   ALL=(ALL:ALL) NOPASSWD: ALL\n" | tee -a /etc/sudoers
 EOL
 
+FROM scratch
+
+LABEL org.opencontainers.image.description="Arch + CachyOS + Chaotic-AUR ->> Arch-based distribution with personal optimization."
+
+COPY --from=ROOT / /
+
 USER app
 
 WORKDIR /tmp
+
+CMD ["/usr/bin/bash"]
 
