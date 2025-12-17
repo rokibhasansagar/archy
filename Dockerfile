@@ -37,9 +37,9 @@ RUN <<-'EOL'
 	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 	pacman-key --lsign-key 3056513887B78AEB
 	export chaoticmirror="https://cdn-mirror.chaotic.cx/chaotic-aur"
-	pacman -U "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
+	pacman -U --noconfirm "${chaoticmirror}/chaotic-keyring.pkg.tar.zst" "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
 	curl -sLO "${chaoticmirror}/chaotic-mirrorlist.pkg.tar.zst"
-	tar -tvf "chaotic-mirrorlist.pkg.tar.zst" /etc/pacman.d/chaotic-mirrorlist
+	tar -tvf "chaotic-mirrorlist.pkg.tar.zst"
 	rm -vf "chaotic-mirrorlist.pkg.tar.zst"
 	cat >>/etc/pacman.conf <<EOH
 	[chaotic-aur]
