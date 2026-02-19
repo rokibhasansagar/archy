@@ -8,10 +8,14 @@ SHELL ["/bin/bash", "-c"]
 
 RUN <<-'EOL'
 	set -x
-	# Update System Immediately
-	pacman -Syu --noconfirm 2>/dev/null || true
 	# Initialize pacman keyring
 	pacman-key --init && pacman-key --populate archlinux
+	# OPTIMIZATION: Prevent installation of man pages and docs
+	sed -i.bak 's/#NoExtract  =/NoExtract  = usr\/share\/help\/* usr\/share\/gtk-doc\/* usr\/share\/doc\/* usr\/share\/man\/* usr\/share\/info\/*/' /etc/pacman.conf
+	# Update System
+	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
+	# Install base-devel
+	pacman -S --noconfirm --needed base-devel
 	# Add CachyOS Repo
 	pacman-key --recv-keys F3B607488DB35A47 --keyserver keyserver.ubuntu.com
 	pacman-key --lsign-key F3B607488DB35A47
@@ -29,10 +33,6 @@ RUN <<-'EOL'
 	Include = /etc/pacman.d/cachyos-mirrorlist
 	EOC
 	echo "" >>/etc/pacman.conf
-	# Update System
-	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
-	# Install base-devel
-	pacman -S --noconfirm --needed base-devel # pacman-contrib pacutils
 	# Add Chaotic-AUR
 	pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 	pacman-key --lsign-key 3056513887B78AEB
@@ -46,9 +46,11 @@ RUN <<-'EOL'
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
-	sudo pacman -S --noconfirm --needed chaotic-aur/paru chaotic-aur/yay
+	pacman -S --noconfirm --needed chaotic-aur/paru chaotic-aur/yay
 	# Cleanup pacman caches
-	sudo rm -rvf /var/lib/pacman/sync/* /var/cache/pacman/pkg/*.pkg.tar.zst* 2>/dev/null
+	rm -rvf /var/lib/pacman/sync/* /var/cache/pacman/pkg/*.pkg.tar.zst* 2>/dev/null
+	# Restore Stock /etc/pacman.conf
+	cp -a -f /etc/pacman.conf.bak /etc/pacman.conf
 	# Add "app" user with "sudo" access
 	useradd -G wheel -m -s /bin/bash app
 	echo -e "\n%wheel ALL=(ALL:ALL) NOPASSWD: ALL\napp   ALL=(ALL:ALL) NOPASSWD: ALL\n" | tee -a /etc/sudoers
@@ -56,9 +58,16 @@ EOL
 
 FROM scratch
 
-LABEL org.opencontainers.image.description="Arch + CachyOS + Chaotic-AUR ->> Arch-based distribution with personal optimization."
+LABEL org.opencontainers.image.description="Arch + CachyOS + Chaotic-AUR ->> Personally Optimized Arch-based Distribution"
 
+# Copy rootfs
 COPY --from=rootfs / /
+
+# Set the hostname to 'archy'
+ENV HOSTNAME=archy
+
+# Set a custom shell prompt
+ENV PS1="\[\e[0;32m\]\u@archy\[\e[0m\] \[\e[0;32m\]\w\[\e[0m\]# "
 
 USER app
 
