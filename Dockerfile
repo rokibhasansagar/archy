@@ -12,6 +12,7 @@ RUN <<-'EOL'
 	pacman-key --init && pacman-key --populate archlinux
 	# OPTIMIZATION: Prevent installation of man pages and docs
 	sed -i.bak 's/#NoExtract  =/NoExtract  = usr\/share\/help\/* usr\/share\/gtk-doc\/* usr\/share\/doc\/* usr\/share\/man\/* usr\/share\/info\/*/' /etc/pacman.conf
+	cp -vf /etc/pacman.conf /etc/pacman.opt.conf
 	# Update System
 	( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install core/base-devel
@@ -34,7 +35,8 @@ RUN <<-'EOL'
 	# EOC
 	# echo "" >>/etc/pacman.conf
 	# Make cachyos pacman conf
-	cat >>/etc/cachyos.pacman.conf <<'EOC'
+	echo "" >>/etc/pacman.opt.conf
+	cat >>/etc/pacman.opt.conf <<'EOC'
 	[cachyos-v3]
 	Server = https://cdn77.cachyos.org/repo/$arch_v3/$repo
 	Server = https://cdn.cachyos.org/repo/$arch_v3/$repo
@@ -42,7 +44,6 @@ RUN <<-'EOL'
 	Server = https://cdn77.cachyos.org/repo/$arch/$repo
 	Server = https://cdn.cachyos.org/repo/$arch/$repo
 	EOC
-	cat /etc/cachyos.pacman.conf
 	# Add Chaotic-AUR
 	# pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
 	# pacman-key --lsign-key 3056513887B78AEB
@@ -54,16 +55,16 @@ RUN <<-'EOL'
 	# EOH
 	# echo "" >>/etc/pacman.conf
 	# Make chaotic-aur pacman conf
-	cat >>/etc/chaotic-aur.pacman.conf <<'EOX'
+	echo "" >>/etc/pacman.opt.conf
+	cat >>/etc/pacman.opt.conf <<'EOX'
 	[chaotic-aur]
 	Server = https://geo-mirror.chaotic.cx/$repo/$arch
 	Server = https://cdn-mirror.chaotic.cx
 	EOX
-	cat /etc/chaotic-aur.pacman.conf
 	# Update System
 	# ( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
-	pacman -S --noconfirm --needed paru yay --config /etc/chaotic-aur.pacman.conf
+	pacman -S --noconfirm --needed paru yay --config /etc/pacman.opt.conf
 	# Cleanup pacman caches
 	rm -rvf /var/lib/pacman/sync/* /var/cache/pacman/pkg/*.pkg.tar.zst* 2>/dev/null
 	# Add "app" user with "sudo" access
