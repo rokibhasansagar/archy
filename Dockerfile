@@ -40,9 +40,11 @@ RUN <<-'EOL'
 	[cachyos-v3]
 	Server = https://cdn77.cachyos.org/repo/$arch_v3/$repo
 	Server = https://cdn.cachyos.org/repo/$arch_v3/$repo
+	SigLevel = PackageOptional
 	[cachyos]
 	Server = https://cdn77.cachyos.org/repo/$arch/$repo
 	Server = https://cdn.cachyos.org/repo/$arch/$repo
+	SigLevel = PackageOptional
 	EOC
 	# Add Chaotic-AUR
 	# pacman-key --recv-key 3056513887B78AEB --keyserver keyserver.ubuntu.com
@@ -60,9 +62,10 @@ RUN <<-'EOL'
 	[chaotic-aur]
 	Server = https://geo-mirror.chaotic.cx/$repo/$arch
 	Server = https://cdn-mirror.chaotic.cx
+	SigLevel = PackageOptional
 	EOX
-	# Update System
-	# ( pacman -Syu --noconfirm 2>/dev/null ) || ( pacman -Syu --noconfirm 2>/dev/null || true )
+	# Update Optimized pacman database
+	( pacman -Sy --noconfirm --needed --config /etc/pacman.opt.conf 2>/dev/null ) || ( pacman -Sy --noconfirm --needed --config /etc/pacman.opt.conf 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
 	pacman -S --noconfirm --needed paru yay --config /etc/pacman.opt.conf
 	# Cleanup pacman caches
