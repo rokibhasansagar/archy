@@ -68,6 +68,12 @@ RUN <<-'EOL'
 	( pacman -Sy --noconfirm --needed --config /etc/pacman.opt.conf 2>/dev/null ) || ( pacman -Sy --noconfirm --needed --config /etc/pacman.opt.conf 2>/dev/null || true )
 	# Install yay & paru (pacman helpers)
 	pacman -S --noconfirm --needed paru yay --config /etc/pacman.opt.conf
+	# Remove base-devel
+	pacman -Rdd --noconfirm base-devel
+	# Remove gcc and others
+	pacman -Rdnu --noconfirm gcc autoconf automake bison debugedit flex groff
+	# Remove orphaned
+	pacman -Rdnu $(pacman -Qdtq)
 	# Cleanup pacman caches
 	rm -rvf /var/lib/pacman/sync/* /var/cache/pacman/pkg/*.pkg.tar.zst* 2>/dev/null
 	# Add "app" user with "sudo" access
